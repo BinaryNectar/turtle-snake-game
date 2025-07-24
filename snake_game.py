@@ -13,9 +13,6 @@ from config import (
     MS_TO_SECONDS,
     BORDER_COLLISION_MARGIN,
     FOOD_COLLISION_DISTANCE,
-    SCORE_INCREMENT,
-    SCOREBOARD_Y_OFFSET,
-    SCOREBOARD_FONT_SIZE,
     GAME_OVER_FONT_SIZE,
     GAME_OVER_DISPLAY_TIME,
     FONT_FAMILY,
@@ -32,6 +29,7 @@ from config import (
     DIRECTION_RIGHT
 )
 from snake import Snake
+from scoreboard import Scoreboard
 
 
 class SnakeGame:
@@ -52,7 +50,6 @@ class SnakeGame:
         self.width = width
         self.height = height
         self.delay = delay / MS_TO_SECONDS  # convert to seconds
-        self.score = 0
 
         # Allow RGB color values
         turtle.colormode(255)
@@ -75,12 +72,7 @@ class SnakeGame:
         self._place_food()
 
         # Scoreboard setup
-        self.pen = turtle.Turtle()
-        self.pen.hideturtle()
-        self.pen.penup()
-        self.pen.color(TEXT_COLOR)
-        self.pen.goto(0, self.height // 2 - SCOREBOARD_Y_OFFSET)
-        self._update_score()
+        self.scoreboard = Scoreboard()
 
         # Input bindings
         self.screen.listen()
@@ -95,17 +87,6 @@ class SnakeGame:
         """
         x, y = random_food_position(self.width, self.height)
         self.food.goto(x, y)
-
-    def _update_score(self):
-        """
-        Refresh the score display at the top of the screen.
-        """
-        self.pen.clear()
-        self.pen.write(
-            f"Score: {self.score}",
-            align='center',
-            font=(FONT_FAMILY, SCOREBOARD_FONT_SIZE, FONT_STYLE)
-        )
 
     def start(self):
         """
@@ -122,8 +103,7 @@ class SnakeGame:
             # Check for food collision
             if self.snake.head.distance(self.food) < FOOD_COLLISION_DISTANCE:
                 self.snake.grow()
-                self.score += SCORE_INCREMENT
-                self._update_score()
+                self.scoreboard.logic.update_score()
                 self._place_food()
 
             # Move the snake
@@ -133,6 +113,8 @@ class SnakeGame:
             # Check for self collision
             if self.snake.check_self_collision():
                 break
+            
+            self.scoreboard.sync()
 
         self._game_over()
 
@@ -140,12 +122,8 @@ class SnakeGame:
         """
         Display the game-over message and close the game after a pause.
         """
-        self.pen.goto(0, 0)
-        self.pen.write(
-            GAME_OVER_MESSAGE,
-            align='center',
-            font=(FONT_FAMILY, GAME_OVER_FONT_SIZE, FONT_STYLE)
-        )
+        self.scoreboard.game_over()
+        
         self.screen.update()
         time.sleep(GAME_OVER_DISPLAY_TIME)
         self.screen.bye()
