@@ -4,17 +4,20 @@ Encapsulates the snake's state and behavior: head creation, movement,
 growth, and self-collision detection.
 """
 
-import turtle
+from turtle import Turtle
 from config import (
-    MOVEMENT_STEP,
+    SELF_COLLISION_DISTANCE,
     SNAKE_SHAPE,
     SNAKE_COLOR,
+    DEFAULT_WINDOW_HEIGHT,
+    DEFAULT_WINDOW_WIDTH,
     DIRECTION_UP,
     DIRECTION_DOWN,
     DIRECTION_LEFT,
     DIRECTION_RIGHT,
     DIRECTION_STOP,
-    SELF_COLLISION_DISTANCE
+    GRID_SQUARE_SIZE,
+    MOVEMENT_STEP
 )
 
 
@@ -30,7 +33,7 @@ class Snake:
         and a stopped direction.
         """
         # Create the head turtle
-        self.head = turtle.Turtle()
+        self.head = Turtle()
         self.head.shape(SNAKE_SHAPE)
         self.head.color(SNAKE_COLOR)
         self.head.penup()
@@ -97,7 +100,7 @@ class Snake:
         """
 
         # Create and position the new segment
-        new_segment = turtle.Turtle()
+        new_segment = Turtle()
         new_segment.shape(SNAKE_SHAPE)
         self.gradient[1] = self.gradient[1] + self.gradient_incrementor
         if self.gradient[1] == 0 or self.gradient[1] == 255:
@@ -119,13 +122,18 @@ class Snake:
                 return True
         return False
 
-    def reset(self):
+    def reset(self, height=DEFAULT_WINDOW_HEIGHT, width=DEFAULT_WINDOW_WIDTH):
         """
         Reset the snake to its initial state: hide segments, clear list,
         center head, and stop movement.
         """
-        for segment in self.segments:
-            segment.hideturtle()
-        self.segments.clear()
         self.head.goto(0, 0)
+        increment = 0
+        for segment in self.segments:
+            segment.goto(width + increment, height)
+            increment += GRID_SQUARE_SIZE
+
+        self.segments.clear()
         self.direction = DIRECTION_STOP
+        self.gradient = list(SNAKE_COLOR)
+        self.gradient_incrementor = -5

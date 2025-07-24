@@ -19,6 +19,7 @@ from config import (
 class ScoreboardLogic:
     def __init__(self, height=DEFAULT_WINDOW_HEIGHT, width=DEFAULT_WINDOW_WIDTH):
         self.score = 0
+        self.high_score = 0
         self.height = height
         self.width = width
         self.x = 0
@@ -26,3 +27,8 @@ class ScoreboardLogic:
         
     def update_score(self):
         self.score += SCORE_INCREMENT
+
+    def reset(self):
+        if self.score > self.high_score:
+            self.high_score = self.score
+        self.score = 0

@@ -92,13 +92,15 @@ class SnakeGame:
         """
         Run the main game loop until a collision occurs.
         """
+        reset = False
+
         while True:
             self.screen.update()
 
             # Check for border collision
             head_x, head_y = self.snake.head.xcor(), self.snake.head.ycor()
             if abs(head_x) > self.width/2 - BORDER_COLLISION_MARGIN or abs(head_y) > self.height/2 - BORDER_COLLISION_MARGIN:
-                break
+                reset = True
 
             # Check for food collision
             if self.snake.head.distance(self.food) < FOOD_COLLISION_DISTANCE:
@@ -112,18 +114,23 @@ class SnakeGame:
 
             # Check for self collision
             if self.snake.check_self_collision():
-                break
+                reset = True
             
+            if reset:
+                self.snake.reset()
+                self.scoreboard.logic.reset()
+                reset = False
+
             self.scoreboard.sync()
 
-        self._game_over()
+        # self._game_over()
 
     def _game_over(self):
         """
         Display the game-over message and close the game after a pause.
         """
         self.scoreboard.game_over()
-        
+
         self.screen.update()
         time.sleep(GAME_OVER_DISPLAY_TIME)
         self.screen.bye()

@@ -17,14 +17,14 @@ class ScoreboardView(Turtle):
         self.penup()
         self.color(TEXT_COLOR)
         self.logic = logic
-        self.sync
+        self.sync()
 
     def sync(self):
         self.goto(self.logic.x, self.logic.y)
         
         self.clear()
         self.write(
-            f"Score: {self.logic.score}",
+            f"Score: {self.logic.score} High Score: {self.logic.high_score}",
             align='center',
             font=(FONT_FAMILY, SCOREBOARD_FONT_SIZE, FONT_STYLE)
         )
